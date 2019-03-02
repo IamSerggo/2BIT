@@ -1,0 +1,7 @@
+.IPPcode19
+MOVE a b
+ADD a b c
+PUSHFRAME
+JUMP penis
+#comment
+
