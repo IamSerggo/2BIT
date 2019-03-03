@@ -77,9 +77,7 @@ class InstructionChecker {
     private function checkInt($int){
         $match = preg_match("/^[\x2B\x2D]?[0-9]*$/", $int);
 
-        if ( $match === 0) {
-            throw new LexSynError("Error! Wrong int format!\n");
-        }
+        if ( $match === 0) throw new LexSynError("Error! Wrong int format!\n");
     }
 
     private function checkString($string){
