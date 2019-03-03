@@ -7,20 +7,16 @@
  */
 
 require_once("./Exceptions/HeaderError.php");
-require_once("./Exceptions/LexicalError.php");
+require_once("./Exceptions/LexSynError.php");
 require_once("./Exceptions/OPcodeError.php");
+require_once("./XMLGenerator.php");
 
 require_once("./InstructionParser.php");
 
+#global variables for STATP extension
 $comments = 0;
+$LOC = 0;
 
-function isComment($loadedLine){
-    if ( strpos($loadedLine, "#") === 0 ) {
-        $GLOBALS['comments']++;
-        return true;
-    }
-    else return false;
-}
 
 function readInput(){
     $input = fopen('php://stdin', 'r');
@@ -31,11 +27,20 @@ function readInput(){
     }
 
     while ( $loadedLine = fgets($input) ){
-        if ( isComment($loadedLine) ) continue;
+        $commentPosition = strpos($loadedLine, "#");
+
+        if ( $commentPosition !== false ) {
+            $GLOBALS['comments']++;
+
+            if ( $commentPosition === 0 ) continue;
+            else $loadedLine = explode("#", $loadedLine)[0];
+        }
 
         $loadedLine = preg_replace('![\s\t]+!', ' ', $loadedLine);
 
         if ( strlen($loadedLine) <= 1 ) continue;
+
+        $GLOBALS['LOC']++;
 
         yield $loadedLine;
     }
@@ -56,7 +61,7 @@ catch (OPcodeError $exception) {
     print("Err 22\n");
     exit(22);
 }
-catch (LexicalError $exception) {
+catch (LexSynError $exception) {
     print("Err 23\n");
     exit(23);
 }

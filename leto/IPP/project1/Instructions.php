@@ -1,6 +1,6 @@
 <?php
 
-require_once ("./Exceptions/LexicalError.php");
+require_once("./Exceptions/LexSynError.php");
 require_once ("./InstructionChecker.php");
 
 abstract class Instruction {
@@ -16,7 +16,7 @@ abstract class Instruction {
         $givenArgs = sizeof($explodedLine) - 1;
 
         if ($givenArgs != $this->requiredArgs) {
-            throw new LexicalError("Error! Wrong number of arguments!\n");
+            throw new LexSynError("Error! Wrong number of arguments!\n");
         }
 
         $this->opCode = $explodedLine[0];
@@ -40,17 +40,10 @@ class Ins_Move extends Instruction {
     }
 }
 
-class Ins_CreateFrame extends Instruction {
+class Ins_Frame extends Instruction {
     protected $requiredArgs = 0;
 }
 
-class Ins_PushFrame extends Instruction {
-    protected $requiredArgs = 0;
-}
-
-class Ins_PopFrame extends Instruction {
-    protected $requiredArgs = 0;
-}
 
 class Ins_DefVar extends Instruction {
     protected $requiredArgs = 1;
@@ -80,7 +73,7 @@ class Ins_Return extends Instruction {
     protected $requiredArgs = 0;
 }
 
-class Ins_Pushs extends Instruction {
+class Ins_Stack extends Instruction {
     protected $requiredArgs = 1;
 
     public function __construct($lineOfCode) {
@@ -92,19 +85,7 @@ class Ins_Pushs extends Instruction {
     }
 }
 
-class Ins_Pops extends Instruction {
-    protected $requiredArgs = 1;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkVariable($this->arg1);
-    }
-}
-
-class Ins_Add extends Instruction {
+class Ins_MathOp extends Instruction {
     protected $requiredArgs = 3;
 
     public function __construct($lineOfCode) {
@@ -118,7 +99,8 @@ class Ins_Add extends Instruction {
     }
 }
 
-class Ins_Sub extends Instruction {
+
+class Ins_LogOp extends Instruction {
     protected $requiredArgs = 3;
 
     public function __construct($lineOfCode) {
@@ -132,117 +114,6 @@ class Ins_Sub extends Instruction {
     }
 }
 
-class Ins_Mul extends Instruction {
-    protected $requiredArgs = 3;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkVariable($this->arg1);
-        $instructionCheck->checkSymbol($this->arg2);
-        $instructionCheck->checkSymbol($this->arg3);
-    }
-}
-
-class Ins_IDiv extends Instruction {
-    protected $requiredArgs = 3;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkVariable($this->arg1);
-        $instructionCheck->checkSymbol($this->arg2);
-        $instructionCheck->checkSymbol($this->arg3);
-    }
-}
-
-class Ins_LT extends Instruction {
-    protected $requiredArgs = 3;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkVariable($this->arg1);
-        $instructionCheck->checkSymbol($this->arg2);
-        $instructionCheck->checkSymbol($this->arg3);
-    }
-}
-
-class Ins_GT extends Instruction {
-    protected $requiredArgs = 3;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkVariable($this->arg1);
-        $instructionCheck->checkSymbol($this->arg2);
-        $instructionCheck->checkSymbol($this->arg3);
-    }
-}
-
-class Ins_EQ extends Instruction {
-    protected $requiredArgs = 3;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkVariable($this->arg1);
-        $instructionCheck->checkSymbol($this->arg2);
-        $instructionCheck->checkSymbol($this->arg3);
-    }
-}
-
-class Ins_And extends Instruction {
-    protected $requiredArgs = 3;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkVariable($this->arg1);
-        $instructionCheck->checkSymbol($this->arg2);
-        $instructionCheck->checkSymbol($this->arg3);
-    }
-}
-
-class Ins_Or extends Instruction {
-    protected $requiredArgs = 3;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkVariable($this->arg1);
-        $instructionCheck->checkSymbol($this->arg2);
-        $instructionCheck->checkSymbol($this->arg3);
-    }
-}
-
-class Ins_Not extends Instruction {
-    protected $requiredArgs = 3;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkVariable($this->arg1);
-        $instructionCheck->checkSymbol($this->arg2);
-        $instructionCheck->checkSymbol($this->arg3);
-    }
-}
 
 class Ins_Int2Char extends Instruction {
     protected $requiredArgs = 2;
@@ -323,7 +194,7 @@ class Ins_Strlen extends Instruction {
     }
 }
 
-class Ins_Getchar extends Instruction {
+class Ins_Char extends Instruction {
     protected $requiredArgs = 3;
 
     public function __construct($lineOfCode) {
@@ -337,19 +208,6 @@ class Ins_Getchar extends Instruction {
     }
 }
 
-class Ins_Setchar extends Instruction {
-    protected $requiredArgs = 3;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkVariable($this->arg1);
-        $instructionCheck->checkSymbol($this->arg2);
-        $instructionCheck->checkSymbol($this->arg3);
-    }
-}
 
 class Ins_Type extends Instruction {
     protected $requiredArgs = 2;
@@ -388,21 +246,7 @@ class Ins_Jump extends Instruction {
     }
 }
 
-class Ins_JumpIfEQ extends Instruction {
-    protected $requiredArgs = 3;
-
-    public function __construct($lineOfCode) {
-        parent::__construct($lineOfCode);
-
-        $instructionCheck = new InstructionChecker();
-
-        $instructionCheck->checkLabel($this->arg1);
-        $instructionCheck->checkSymbol($this->arg2);
-        $instructionCheck->checkSymbol($this->arg3);
-    }
-}
-
-class Ins_JumpIfNotEQ extends Instruction {
+class Ins_CondJump extends Instruction {
     protected $requiredArgs = 3;
 
     public function __construct($lineOfCode) {

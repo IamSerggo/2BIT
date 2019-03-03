@@ -6,7 +6,7 @@
  * Time: 17:14
  */
 
-class LexicalError extends Exception
+class LexSynError extends Exception
 {
 
 }
