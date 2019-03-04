@@ -25,6 +25,51 @@ abstract class Instruction {
         if ( $givenArgs >= 2 ) $this->arg2 = $explodedLine[2];
         if ( $givenArgs == 3 ) $this->arg3 = $explodedLine[3];
     }
+
+    public function argToXML($xml, $argNum, $arg){
+        $argNode = $xml->createElement($argNum);
+        $explodedArg = explode("@", $arg);
+
+        if ( count($explodedArg) != 2 ) {
+            $type = "label";
+            $text = $arg;
+        }
+        elseif ( $explodedArg[0] == 'GF' or $explodedArg[0] == 'TF' or $explodedArg[0] == 'LF') {
+            $type = "var";
+            $text = $explodedArg[1];
+        }
+        else {
+            $type = $explodedArg[0];
+            $text = $explodedArg[1];
+        }
+
+        $argNode->setAttribute("type", $type);
+        $argNode->textContent = $text;
+
+        return $argNode;
+    }
+    public function convertToXML($xml, $orderNumber){
+        $node = $xml->createElement("instruction");
+        $node->setAttribute("order", $orderNumber);
+        $node->setAttribute("opcode", $this->opCode);
+
+        if ( $this->requiredArgs >= 1 ) {
+            $arg1Node = $this->argToXML($xml, "arg1", $this->arg1);
+            $node->appendChild($arg1Node);
+        }
+
+        if ( $this->requiredArgs >= 2 ) {
+            $arg2Node = $this->argToXML($xml, "arg2", $this->arg2);
+            $node->appendChild($arg2Node);
+        }
+
+        if ( $this->requiredArgs == 3) {
+            $arg3Node = $this->argToXML($xml, "arg3", $this->arg3);
+            $node->appendChild($arg3Node);
+        }
+
+        return $node;
+    }
 }
 
 class Ins_Move extends Instruction {
@@ -231,6 +276,8 @@ class Ins_Label extends Instruction {
         $instructionCheck = new InstructionChecker();
 
         $instructionCheck->checkLabel($this->arg1);
+
+        $GLOBALS['labels']++;
     }
 }
 
@@ -243,6 +290,8 @@ class Ins_Jump extends Instruction {
         $instructionCheck = new InstructionChecker();
 
         $instructionCheck->checkLabel($this->arg1);
+
+        $GLOBALS['jumps']++;
     }
 }
 
