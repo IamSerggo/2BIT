@@ -23,16 +23,18 @@ $jumps = 0;
 
 function printHelp(){
     echo("Tu sa vypise help\n");
+    exit(0);
 }
 
-function printStats($argv, $outputFile){
+function printStats($argv, $outputFile, $statsIndex){
     #$actualDir = dirname(__FILE__);
 
     $file = fopen($outputFile, "w");
 
     if ( $file === false ) throw new Exception("Error while file opening!\n");
 
-    for ($i = 2; $i <= 5; $i++){
+    for ($i = 1; $i <= (count($argv)-1); $i++){
+        if ( $i == $statsIndex ) continue;
         switch ($argv[$i]){
             case "--loc":
                 fwrite($file, $GLOBALS['LOC']."\n");
@@ -52,29 +54,6 @@ function printStats($argv, $outputFile){
     }
 
     fclose($file);
-}
-
-function runParser($argv, $argc){
-    if ( $argc == 1 ) {
-        $parser = new InstructionParser();
-        return $parser->parseData( readInput() );
-    }
-    if ( $argc == 2 and $argv[1] == "--help" ) {
-        printHelp();
-    }
-    elseif ( $argc == 6 and strpos($argv[1], "--stats=") !== false ) {
-        $outputFile = explode("=", $argv[1])[1];
-
-        $parser = new InstructionParser();
-        $parsedInstructions = $parser->parseData( readInput() );
-
-        printStats($argv, $outputFile);
-
-        return $parsedInstructions;
-
-    }
-    else throw new ProgramArgsError("Error! Wrong program arguments inserted!\n");
-
 }
 
 function readInput(){
@@ -105,11 +84,46 @@ function readInput(){
     }
 }
 
+function runParser($argv, $argc){
+    if ( $argc == 1 ) {
+        $parser = new InstructionParser();
+        return $parser->parseData( readInput() );
+    }
+    elseif ( $argc == 2 and $argv[1] == "--help" ) {
+        printHelp();
+    }
+    else {
+        $index = 0;
+        $statsPresent = false;
+
+        foreach ($argv as $argument) {
+            if ( strpos($argument, "--stats=") !== false ){
+                $statsPresent = true;
+                break;
+            }
+            $index++;
+        }
+
+        if ( $statsPresent === false ) throw new ProgramArgsError("Error! Wrong program arguments inserted!\n");
+        else {
+            $outputFile = explode("=", $argv[$index])[1];
+
+            $parser = new InstructionParser();
+            $parsedInstructions = $parser->parseData( readInput() );
+
+            printStats($argv, $outputFile, $index);
+
+            return $parsedInstructions;
+        }
+    }
+}
+
 try {
     $parsedInstructions = runParser($argv, $argc);
 
     $generator = new XMLGenerator();
     $generator->generate($parsedInstructions);
+
 
 }
 catch (ProgramArgsError $exception) {

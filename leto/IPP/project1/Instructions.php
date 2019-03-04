@@ -19,7 +19,7 @@ abstract class Instruction {
             throw new LexSynError("Error! Wrong number of arguments!\n");
         }
 
-        $this->opCode = $explodedLine[0];
+        $this->opCode = strtoupper($explodedLine[0]);
 
         if ( $givenArgs >= 1 ) $this->arg1 = $explodedLine[1];
         if ( $givenArgs >= 2 ) $this->arg2 = $explodedLine[2];

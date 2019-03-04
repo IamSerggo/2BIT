@@ -41,9 +41,8 @@ class InstructionChecker {
 
     #TODO : sem este musim zistit ze kedy to moze byt nil a kedy nemoze
     public function checkType($input){
-        if ( $input != 'int' and $input != 'bool' and $input != 'string' ) {
-            throw new Exception("Error! Wrong type selected!\n");
-            #TODO : neviem aka toto bude Exception !!
+        if ( $input != 'int' and $input != 'bool' and $input != 'string' and $input != 'nil' ) {
+            throw new LexSynError("Error! Wrong type selected!\n");
         }
     }
 
@@ -60,6 +59,8 @@ class InstructionChecker {
             case "string":
                 $this->checkString($constant);
                 break;
+            case "nil":
+                break;
 
             default:
                 throw new LexSynError("Error! Unknown type!n");
@@ -69,8 +70,7 @@ class InstructionChecker {
 
     private function checkBool($bool){
         if ($bool != 'true' and $bool != 'false'){
-            throw new Exception("Error! Wrong boolean value!\n");
-            #TODO : dorobit pre toto Exception
+            throw new LexSynError("Error! Wrong boolean value!\n");
         }
     }
 
