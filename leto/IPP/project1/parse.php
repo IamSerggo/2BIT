@@ -54,7 +54,7 @@ function printStats($argv, $outputFile){
     fclose($file);
 }
 
-function runProgram($argv, $argc){
+function runParser($argv, $argc){
     if ( $argc == 1 ) {
         $parser = new InstructionParser();
         return $parser->parseData( readInput() );
@@ -106,7 +106,7 @@ function readInput(){
 }
 
 try {
-    $parsedInstructions = runProgram($argv, $argc);
+    $parsedInstructions = runParser($argv, $argc);
 
     $generator = new XMLGenerator();
     $generator->generate($parsedInstructions);
