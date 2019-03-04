@@ -4,6 +4,7 @@ require_once("./Exceptions/LexSynError.php");
 require_once ("./InstructionChecker.php");
 
 abstract class Instruction {
+
     protected $requiredArgs;
     public $opCode;
     public $arg1;
@@ -26,7 +27,7 @@ abstract class Instruction {
         if ( $givenArgs == 3 ) $this->arg3 = $explodedLine[3];
     }
 
-    public function argToXML($xml, $argNum, $arg){
+    private function argToXML($xml, $argNum, $arg){
         $argNode = $xml->createElement($argNum);
         $explodedArg = explode("@", $arg);
 
@@ -48,6 +49,7 @@ abstract class Instruction {
 
         return $argNode;
     }
+
     public function convertToXML($xml, $orderNumber){
         $node = $xml->createElement("instruction");
         $node->setAttribute("order", $orderNumber);

@@ -1,7 +1,7 @@
 <?php
 
-
 class InstructionChecker {
+
     public function checkVariable($input){
         if ( count($explodedInput = explode("@", $input)) != 2 ) {
             throw new LexSynError("Error! Wrong frame syntax!\n");

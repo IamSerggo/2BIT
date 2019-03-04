@@ -52,7 +52,6 @@ function printStats($argv, $outputFile, $statsIndex){
                 throw new ProgramArgsError("Error! Wrong program arguments inserted!\n");
         }
     }
-
     fclose($file);
 }
 
@@ -123,8 +122,6 @@ try {
 
     $generator = new XMLGenerator();
     $generator->generate($parsedInstructions);
-
-
 }
 catch (ProgramArgsError $exception) {
     exit(10);
