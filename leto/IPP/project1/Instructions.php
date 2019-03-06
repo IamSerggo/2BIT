@@ -37,11 +37,12 @@ abstract class Instruction {
         }
         elseif ( $explodedArg[0] == 'GF' or $explodedArg[0] == 'TF' or $explodedArg[0] == 'LF') {
             $type = "var";
-            $text = $explodedArg[1];
+            $text = $arg;
         }
         else {
             $type = $explodedArg[0];
             $text = $explodedArg[1];
+            if ( $type == "string" ) $text = str_replace(array("&", "<", ">"), array("&amp", "&lt", "&gt"), $text);
         }
 
         $argNode->setAttribute("type", $type);

@@ -11,8 +11,8 @@ require_once("./Exceptions/LexSynError.php");
 require_once("./Exceptions/OPcodeError.php");
 require_once("./Exceptions/ProgramArgsError.php");
 require_once("./Exceptions/StatsParamError.php");
-require_once("./XMLGenerator.php");
 
+require_once("./XMLGenerator.php");
 require_once("./InstructionParser.php");
 
 #global variables for STATP extension
@@ -57,10 +57,20 @@ function printStats($argv, $outputFile, $statsIndex){
 
 function readInput(){
     $input = fopen('php://stdin', 'r');
-    $firstLine = strtolower( fgets($input) );
 
-    if ( trim($firstLine) != ".ippcode19" ){
-        throw new HeaderError("Error! Code doesn't starts with '.ippcode19' !!");
+    while (true){
+        $firstLine = strtolower( fgets($input) );
+
+        if ( trim($firstLine) != ".ippcode19" ){
+
+            if ( strpos($firstLine, "#") !== false ) {
+                if ( trim(explode("#", $firstLine)[0]) == ".ippcode19" ) break;
+                elseif ( strpos($firstLine, "#") === 0 ) continue;
+                else throw new HeaderError("Error! Code doesn't starts with '.ippcode19' !!");
+            }
+            else throw new HeaderError("Error! Code doesn't starts with '.ippcode19' !!");
+        }
+        else break;
     }
 
     while ( $loadedLine = fgets($input) ){
