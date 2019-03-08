@@ -14,7 +14,7 @@ class InstructionParser{
         return $parsedInstructions;
     }
 
-    public function createInstruction($instruction){
+    private function createInstruction($instruction){
         $opCode = strtoupper( explode(" ", trim($instruction))[0] );
 
         switch ($opCode){

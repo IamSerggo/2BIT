@@ -59,6 +59,7 @@ class InstructionChecker {
             case "string":
                 $this->checkString($constant);
                 break;
+
             case "nil":
                 break;
 
@@ -84,6 +85,6 @@ class InstructionChecker {
         $match = preg_match("/^([a-zA-Z\x{0021}\x{0022}\x{0024}-\x{005B}\x{005D}-\x{FFFF}|(\\\\[0-90-90-9])*$/u",
                             $string);
 
-        if ( $match === 0 ) throw new Exception("Error! Wrong string format!\n");
+        if ( $match === 0 ) throw new LexSynError("Error! Wrong string format!\n");
     }
 }
