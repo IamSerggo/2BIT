@@ -16,6 +16,7 @@ class XMLGenerator {
         }
 
         $xml->appendChild($xmlRoot);
+
         fwrite(STDOUT, $xml->saveXML());
     }
 }

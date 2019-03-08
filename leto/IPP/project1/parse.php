@@ -1,6 +1,7 @@
 <?php
 /**
- * File: First part of project for IPP
+ * Project: First part of project for IPP
+ * File: parse.php
  * Author: Radovan Babic, xbabic09
  * Date: 2.3.2019
  * School: VUT FIT, 2BIT
@@ -58,19 +59,12 @@ function printStats($argv, $outputFile, $statsIndex){
 function readInput(){
     $input = fopen('php://stdin', 'r');
 
-    while (true){
-        $firstLine = strtolower( fgets($input) );
+    $firstLine = strtolower( fgets($input) );
 
-        if ( trim($firstLine) != ".ippcode19" ){
-
-            if ( strpos($firstLine, "#") !== false ) {
-                if ( trim(explode("#", $firstLine)[0]) == ".ippcode19" ) break;
-                elseif ( strpos($firstLine, "#") === 0 ) continue;
-                else throw new HeaderError("Error! Code doesn't starts with '.ippcode19' !!");
-            }
-            else throw new HeaderError("Error! Code doesn't starts with '.ippcode19' !!");
+    if ( trim($firstLine) != ".ippcode19" ){
+        if ( trim(explode("#", $firstLine)[0]) != ".ippcode19" ) {
+            throw new HeaderError("Error! Code doesn't starts with '.IPPcode19' !!");
         }
-        else break;
     }
 
     while ( $loadedLine = fgets($input) ){
