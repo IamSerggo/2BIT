@@ -30,7 +30,16 @@ $jumps = 0;
       * @return void
       */
 function printHelp(){
-    echo("Help\n");
+    echo("**Parser for non-structured imperative language IPPcode19**\n");
+    echo("Supported program arguments: --help, --stats\n");
+    echo("--help : shows this help menu, can't be combined with other arguments\n");
+    echo("--stats : this argument must be in format --stats=file and it takes 4 optional arguments\n");
+    echo("**OPTIONAL ARGUMENTS**\n");
+    echo("--loc : lines of code\n");
+    echo("--comments : amount of comments\n");
+    echo("--labels : amount of labels\n");
+    echo("--jumps : amount of jumps\n");
+    echo("Any of these 4 arguments without --stats argument are invalid!\n");
     exit(0);
 }
 
@@ -92,6 +101,7 @@ function readInput(){
         if ( trim(explode("#", $firstLine)[0]) != ".ippcode19" ) {
             throw new HeaderError("Error! Code doesn't starts with '.IPPcode19' !!");
         }
+        else $GLOBALS['comments']++;
     }
 
     while ( $loadedLine = fgets($input) ){
