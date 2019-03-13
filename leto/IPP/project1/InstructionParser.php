@@ -1,9 +1,28 @@
 <?php
+/**
+ * Project: First part of project for IPP
+ * File: InstructionParser.php
+ * Author: Radovan Babic, xbabic09
+ * Date: 2.3.2019
+ * School: VUT FIT, 2BIT
+ */
 
 require_once("./Instructions.php");
 
+/**
+ * Class for parsing instrucions into array
+ *
+ * One big switch to check if given instruction is supported - otherwise throw exception
+ */
 class InstructionParser{
 
+    /**
+        * Parsing instructions into array
+        *
+        * @param string $input - Line of code (instruction)
+        *
+        * @return array $parsedInstructions - Array of parsed instructions
+        */
     public function parseData($input){
         $parsedInstructions = array();
 
@@ -14,6 +33,13 @@ class InstructionParser{
         return $parsedInstructions;
     }
 
+    /**
+        * Checking if instruction is supported
+        *
+        * @param string $instruction - Instruction to be checked
+        *
+        * @return Instruction - New instantion of instruction
+        */
     private function createInstruction($instruction){
         $opCode = strtoupper( explode(" ", trim($instruction))[0] );
 

@@ -22,11 +22,29 @@ $LOC = 0;
 $labels = 0;
 $jumps = 0;
 
+/**
+      * This method prints help for program usage
+      *
+      * @param void
+      *
+      * @return void
+      */
 function printHelp(){
-    echo("Tu sa vypise help\n");
+    echo("Help\n");
     exit(0);
 }
 
+/**
+      * This method prints statistics to file chosen by argument --stats
+      *
+      * Implementation of STATP extension
+      *
+      * @param array $argv - Array of arguments
+      * @param string $outputFile - Path to output file
+      * @param int $statsIndex - Index to the array of arguments where --stats argument is saved
+      *
+      * @return void
+      */
 function printStats($argv, $outputFile, $statsIndex){
     #$actualDir = dirname(__FILE__);
 
@@ -56,6 +74,15 @@ function printStats($argv, $outputFile, $statsIndex){
     fclose($file);
 }
 
+/**
+      * This method reads input from STDIN line by line
+      *
+      * Comments and header correctness check included
+      *
+      * @param void
+      *
+      * @return string $loadedLine - yielding lines for further analysis
+      */
 function readInput(){
     $input = fopen('php://stdin', 'r');
 
@@ -87,6 +114,17 @@ function readInput(){
     }
 }
 
+/**
+      * This method runs whole program
+      *
+      * Method will check correcntess of given arguments and will call adequate methods
+      * Method is called in try-catch block to catch Exceptions and return relevant code
+      *
+      * @param array $argv - Array of arguments
+      * @param int $argc - Number of given arguments
+      *
+      * @return array $parsedInstructions - Array of parsed instructions (objects extended from abstract class Instruction)
+      */
 function runParser($argv, $argc){
     if ( $argc == 1 ) {
         $parser = new InstructionParser();
@@ -142,4 +180,3 @@ catch (LexSynError $exception) {
 catch (Exception $exception) {
     exit(99);
 }
-

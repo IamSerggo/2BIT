@@ -1,8 +1,24 @@
 <?php
+/**
+ * Project: First part of project for IPP
+ * File: Instructions.php
+ * Author: Radovan Babic, xbabic09
+ * Date: 2.3.2019
+ * School: VUT FIT, 2BIT
+ */
 
 require_once("./Exceptions/LexSynError.php");
 require_once ("./InstructionChecker.php");
 
+/**
+ * Abstract class for generating instructions
+ *
+ * @var int $requiredArgs - Nubmer of arguments required by instruction
+ * @var string $opCode - Operation code of instruction
+ * @var string|null $arg1 - First arguemnt of instruction
+ * @var string|null $arg2 - Second arguemnt of instruction
+ * @var string|null $arg3 - Third arguemnt of instruction
+ */
 abstract class Instruction {
 
     protected $requiredArgs;
@@ -11,6 +27,16 @@ abstract class Instruction {
     public $arg2;
     public $arg3;
 
+    /**
+          * Constructor for instructions
+          *
+          * Method will check if given arguments are correct
+          * All given information will be saved and instation of instruction will be created
+          *
+          * @param string $lineOfCode - Line of code (instruction) to be transformed into object
+          *
+          * @return void
+          */
     public function __construct($lineOfCode) {
         $explodedLine = explode(" ", trim($lineOfCode));
 
@@ -27,6 +53,15 @@ abstract class Instruction {
         if ( $givenArgs == 3 ) $this->arg3 = $explodedLine[3];
     }
 
+    /**
+          * Converting instruction's argument into XML nodes
+          *
+          * @param DOMDocument $xml - Instation of DOMDocument to which node will be appended
+          * @param string $argNum - Number of argument (arg1, arg2, arg3)
+          * @param string $arg - Argument to be converted into XML node
+          *
+          * @return DOMElement $argNode - Argument converted to XML node
+          */
     private function argToXML($xml, $argNum, $arg){
         $argNode = $xml->createElement($argNum);
         $explodedArg = explode("@", $arg);
@@ -51,6 +86,16 @@ abstract class Instruction {
         return $argNode;
     }
 
+    /**
+          * Converting instruction into XML node
+          *
+          * Method is using argToXML method for arguments conversion into XML nodes
+          *
+          * @param DOMDocument $xml - Instation of DOMDocument to which nodes will be appended
+          * @param int $orderNumber - Keeping order of instructions
+          *
+          * @return DOMElement $node - Instruction converted to XML node
+          */
     public function convertToXML($xml, $orderNumber){
         $node = $xml->createElement("instruction");
         $node->setAttribute("order", $orderNumber);
@@ -75,6 +120,12 @@ abstract class Instruction {
     }
 }
 
+/**
+ * Classes for each instruction
+ *
+ * Each instruciton has it's own nubmer of required arguments
+ * Constructors are calling methods from InstructionChecker to check Lex and Syn correctness
+ */
 class Ins_Move extends Instruction {
     protected $requiredArgs = 2;
 
