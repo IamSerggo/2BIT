@@ -32,7 +32,7 @@ CREATE TABLE pivo (
     Farba VARCHAR(255),
     Styl_kvasenia VARCHAR(255),
     Typ VARCHAR(255),
-    Obsah_alkoholu NUMBER(2, 1),
+    Obsah_alkoholu NUMBER(2, 1) CHECK (Obsah_alkoholu BETWEEN 0 AND 50),
     Obdobie_varenia VARCHAR(255),
 
     varil_sladek NUMBER NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE slad (
 CREATE TABLE chmel (
     ChmelID NUMBER NOT NULL PRIMARY KEY,
     Aroma VARCHAR(255),
-    Horkost_IBU NUMBER(3),
+    Horkost_IBU NUMBER(3) CHECK (Horkost_IBU BETWEEN 0 AND 120),
     Podiel_kyselin NUMBER(3, 2),
     Povod VARCHAR(255),
     Doba_zberu VARCHAR(255)
@@ -65,19 +65,19 @@ CREATE TABLE chmel (
 
 CREATE TABLE kvasnice (
     KvasniceID NUMBER NOT NULL PRIMARY KEY,
-    Skupenstvo VARCHAR(255),
+    Skupenstvo VARCHAR(255) CHECK (Skupenstvo IN ('Kvapalne', 'Pevne')),
     Styl_kvasenia VARCHAR(255)
 );
 
 CREATE TABLE uzivatel (
     UzivatelID NUMBER NOT NULL PRIMARY KEY,
     Meno VARCHAR(255) NOT NULL,
-    Mnozstvo_vypiteho_piva NUMBER
+    Mnozstvo_vypiteho_piva NUMBER CHECK (Mnozstvo_vypiteho_piva >= 0)
 );
 
 CREATE TABLE sladek (
     SladekID NUMBER NOT NULL PRIMARY KEY,
-    Generacia NUMBER,
+    Generacia NUMBER CHECK (Generacia > 0),
     Druh VARCHAR(255),
 
     sladkovsky_diplom NUMBER NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE pivovar (
     Krajina VARCHAR(255),
 
     Znacka VARCHAR(255) NOT NULL,
-    Rok_zalozenia NUMBER
+    Rok_zalozenia NUMBER CHECK (Rok_zalozenia >= 1000)
 );
 
 CREATE TABLE zmluva (
@@ -144,7 +144,7 @@ CREATE TABLE zmluva (
 );
 
 CREATE TABLE podrobnosti_kp (
-    Mnozstvo NUMBER,
+    Mnozstvo NUMBER CHECK (Mnozstvo >= 0),
     Distribucia VARCHAR(255),
 
     kp NUMBER NOT NULL,
@@ -154,7 +154,7 @@ CREATE TABLE podrobnosti_kp (
 );
 
 CREATE TABLE podrobnosti_h (
-    Mnozstvo NUMBER,
+    Mnozstvo NUMBER CHECK (Mnozstvo >= 0),
     Distribucia VARCHAR(255),
 
     Dostupne_pivo NUMBER NOT NULL,
@@ -165,7 +165,7 @@ CREATE TABLE podrobnosti_h (
 
 CREATE TABLE hodnotenie_hospoda (
     Datum DATE,
-    Pocet_hviezdiciek NUMBER(1),
+    Pocet_hviezdiciek NUMBER(1) CHECK (Pocet_hviezdiciek BETWEEN 0 AND 5),
 
     hodnotena_hospoda NUMBER NOT NULL,
     hodnotiaci_uzivatel NUMBER NOT NULL,
@@ -175,7 +175,7 @@ CREATE TABLE hodnotenie_hospoda (
 
 CREATE TABLE hodnotenie_pivo (
     Datum DATE,
-    Pocet_hviezdiciek NUMBER(1),
+    Pocet_hviezdiciek NUMBER(1) CHECK (Pocet_hviezdiciek BETWEEN 0 AND 5),
 
     hodnotene_pivo NUMBER NOT NULL,
     hodnotiaci_uzivatel NUMBER NOT NULL,
@@ -369,11 +369,11 @@ INSERT INTO chmel(ChmelID, Aroma, Horkost_IBU, Podiel_kyselin, Povod, Doba_zberu
     VALUES ('003', 'matova', '42', '0.63', 'francuzsko', 'minuly rok');
 
 INSERT INTO kvasnice(KvasniceID, Skupenstvo, Styl_kvasenia)
-    VALUES ('001', 'ako nic', 'nudny');
+    VALUES ('001', 'Kvapalne', 'nudny');
 INSERT INTO kvasnice(KvasniceID, Skupenstvo, Styl_kvasenia)
-    VALUES ('002', 'plynne', 'spodny');
+    VALUES ('002', 'Pevne', 'spodny');
 INSERT INTO kvasnice(KvasniceID, Skupenstvo, Styl_kvasenia)
-    VALUES ('003', 'kvapalne', 'svrchny');
+    VALUES ('003', 'Kvapalne', 'svrchny');
 
 INSERT INTO kamenna_predajna(KpID, Nazov, Mesto, Ulica, Cislo_ulice, Krajina)
     VALUES ('001', 'U Havrana', 'Brno', 'Vlhka', '45', 'Africka republika');
@@ -422,14 +422,14 @@ INSERT INTO hodnotenie_hospoda(Datum, Pocet_hviezdiciek, hodnotena_hospoda, hodn
 INSERT INTO hodnotenie_hospoda(Datum, Pocet_hviezdiciek, hodnotena_hospoda, hodnotiaci_uzivatel)
     VALUES ('02/FEB/2020', '2', '002', '002');
 INSERT INTO hodnotenie_hospoda(Datum, Pocet_hviezdiciek, hodnotena_hospoda, hodnotiaci_uzivatel)
-    VALUES ('02/FEB/2020', '9', '003', '002');
+    VALUES ('02/FEB/2020', '4', '003', '002');
 
 INSERT INTO hodnotenie_pivo(Datum, Pocet_hviezdiciek, hodnotene_pivo, hodnotiaci_uzivatel)
     VALUES ('02/FEB/2020', '4', '001', '003');
 INSERT INTO hodnotenie_pivo(Datum, Pocet_hviezdiciek, hodnotene_pivo, hodnotiaci_uzivatel)
-    VALUES ('02/FEB/2020', '8', '001', '002');
+    VALUES ('02/FEB/2020', '1', '001', '002');
 INSERT INTO hodnotenie_pivo(Datum, Pocet_hviezdiciek, hodnotene_pivo, hodnotiaci_uzivatel)
-    VALUES ('23/NOV/2003', '7', '002', '003');
+    VALUES ('23/NOV/2003', '5', '002', '003');
 
 INSERT INTO sledovanie_pivovar(uzivatel_id, pivovar_id)
     VALUES ('001', '003');

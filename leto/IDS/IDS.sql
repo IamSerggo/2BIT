@@ -32,7 +32,7 @@ CREATE TABLE pivo (
     Farba VARCHAR(255),
     Styl_kvasenia VARCHAR(255),
     Typ VARCHAR(255),
-    Obsah_alkoholu NUMBER(2, 1),
+    Obsah_alkoholu NUMBER(2, 1) CHECK (Obsah_alkoholu<=50),
     Obdobie_varenia VARCHAR(255),
 
     varil_sladek NUMBER NOT NULL,
