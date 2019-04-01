@@ -35,7 +35,15 @@ public abstract class GameFactory{
     }
 
     public static Game createCheckersGame(Board board){
-        // TODO : aj sem dorobit panaciky
+        Figure pawn;
+
+        for (int i = 1; i < board.getSize()+1; i++){
+            pawn = new Pawn(true);
+
+            if ( i%2 != 0 ) board.getField(i, 1).put(pawn);
+            else board.getField(i, 2).put(pawn);
+        }
+
         return new GameInstance(board);
     }
 }
