@@ -8,6 +8,7 @@ import ija.ija2018.homework2.common.Field;
 import ija.ija2018.homework2.common.Figure;
 import ija.ija2018.homework2.common.Game;
 import ija.ija2018.homework2.game.Board;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

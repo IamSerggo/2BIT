@@ -3,13 +3,15 @@ package ija.ija2018.homework2.game;
 import ija.ija2018.homework2.common.Field;
 import ija.ija2018.homework2.common.Figure;
 
-public class Pawn implements Figure {
-    private boolean color;
+public abstract class Pawn implements Figure {
+    // TODO : neviem ci protected je uplne dobre, musim este pozistovat
 
-    private int col;
-    private int row;
+    protected boolean color;
 
-    private Field position;
+    protected int col;
+    protected int row;
+
+    protected Field position;
 
     public Pawn(boolean isWhite){
         this.color = isWhite;
@@ -32,28 +34,17 @@ public class Pawn implements Figure {
 
     @Override
     public boolean move(Field moveTo) {
-        Field.Direction dir;
+       return true; //each function has its own overridden move function
+    }
 
-        if ( this.color ) dir = Field.Direction.U;
-        else dir = Field.Direction.D;
+    protected void setAttributesAfterMove(Field moveTo){
+        this.position.remove(this);
 
-        if ( this.position.nextField(dir) != moveTo ) return false;
-        else {
-            if ( !moveTo.isEmpty() ) {
-                if ( moveTo.get().isWhite() == this.color ) return false;
+        this.setPosition(moveTo);
+        this.setCol(moveTo.getCol());
+        this.setRow(moveTo.getRow());
 
-                moveTo.remove(moveTo.get());
-            }
-
-            this.position.remove(this);
-            this.setPosition(moveTo);
-            this.setCol(moveTo.getCol());
-            this.setRow(moveTo.getRow());
-
-            moveTo.put(this);
-
-            return true;
-        }
+        moveTo.put(this);
     }
 
     public void setCol(int col){
@@ -65,7 +56,7 @@ public class Pawn implements Figure {
     }
 
     public void setPosition(Field field){
-        this.position = field;
+        position = field;
     }
 
     public Field getPosition() { return this.position; }

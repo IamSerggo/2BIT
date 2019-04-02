@@ -2,10 +2,7 @@ package ija.ija2018.homework2;
 
 import ija.ija2018.homework2.common.Figure;
 import ija.ija2018.homework2.common.Game;
-import ija.ija2018.homework2.game.Board;
-import ija.ija2018.homework2.game.GameInstance;
-import ija.ija2018.homework2.game.Pawn;
-import ija.ija2018.homework2.game.Rook;
+import ija.ija2018.homework2.game.*;
 
 public abstract class GameFactory{
 
@@ -16,8 +13,8 @@ public abstract class GameFactory{
         Figure wrook;
 
         for (int i = 1; i < board.getSize()+1; i++){
-            bpawn = new Pawn(false);
-            wpawn = new Pawn(true);
+            bpawn = new ChessPawn(false);
+            wpawn = new ChessPawn(true);
 
             board.getField(i, 2).put(wpawn);
             board.getField(i, board.getSize()-1).put(bpawn);
@@ -38,7 +35,7 @@ public abstract class GameFactory{
         Figure pawn;
 
         for (int i = 1; i < board.getSize()+1; i++){
-            pawn = new Pawn(true);
+            pawn = new CheckersPawn(true);
 
             if ( i%2 != 0 ) board.getField(i, 1).put(pawn);
             else board.getField(i, 2).put(pawn);
