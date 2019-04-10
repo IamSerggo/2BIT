@@ -192,6 +192,38 @@ class Instructions ():
 
         return int(newIP)
 
+    def EXIT(code):
+        returnCode = 0
+        for arg in code:
+            if arg.attrib['type'] == "int":
+                if int(arg.text.split("@")[-1]) not in range(-1, 50):
+                    sys.exit(57)
+
+                return int(arg.text.split("@")[-1])
+
+            elif arg.attrib['type'] == "var":
+                split = arg.text.split("@")
+                if split[0] != "GF":
+                    sys.exit(-1)
+
+                else:
+                    returnCode = globalFrame.get(split[-1])
+                    if returnCode == None:
+                        sys.exit(15) # TODO
+                    else:
+                        try:
+                            returnCode = int(returnCode)
+                        except ValueError:
+                            sys.exit(57)
+
+                    if returnCode not in range(-1, 50):
+                        sys.exit(57)
+            else:
+                sys.exit(57)
+
+        return returnCode
+
+
 #\/ ================ METHODS ================ \/#
 def printHelp():
     print("help\n")
@@ -346,6 +378,9 @@ def runProgram():
             instructionPointer = retVal
             continue
 
+        elif opcode == "EXIT":
+            #57
+            sys.exit(Instructions.EXIT(instruction))
         #
         # else:
         #     sys.exit(12) # TODO
