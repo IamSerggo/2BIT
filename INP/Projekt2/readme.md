@@ -1,0 +1,1 @@
+HODNOTENIE : 20/23

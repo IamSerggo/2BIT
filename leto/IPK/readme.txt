@@ -1,3 +1,6 @@
+HODNOTENIE : zle som precital zadanie, miesto api-key malo byt api_key 
+	   : dostal som teda 17/20 (program funkcny na fullku)
+
 !! IPK Project no.1 -- Radovan Babic, xbabic09 !!
 
 Description:

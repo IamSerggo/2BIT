@@ -1,0 +1,1 @@
+HODNOTENIE : 11/12

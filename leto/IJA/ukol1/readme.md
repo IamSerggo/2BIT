@@ -1,0 +1,1 @@
+HODNOTENIE : 2/2
