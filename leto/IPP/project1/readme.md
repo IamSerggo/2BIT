@@ -1,6 +1,6 @@
-#HODNOTENIE : 
-##parse.php : 8/7
-##interpret.py : /13
+# HODNOTENIE : 
+## parse.php : 8/7
+## interpret.py : /13
 
 Implementační dokumentace k 1. úloze do IPP 2018/2019
 
