@@ -39,21 +39,22 @@ class Instructions ():
         for arg in what:
             split = arg.text.split("@")
             if split[0] != "GF":
-                continue
+                sys.exit(55)
 
             else:
                 if not isVariableDefined(globalFrame, split[-1]):
-                    sys.exit(52)
+                    sys.exit(54)
                 else:
                     stuffToPrint = globalFrame.get(split[-1])
                     if stuffToPrint == "Uninitialized":
                         sys.exit(56)
                     else:
                         stuffToPrint = Instructions.__replaceSpecialCharacters(stuffToPrint)
-                        print(stuffToPrint, end='')
+                        sys.stderr.write(stuffToPrint, end='')
 
     @staticmethod
     def __parseArg(arg):
+        compare = None
         type = arg.attrib['type']
         if type == "string":
             compare = arg.text
@@ -70,11 +71,11 @@ class Instructions ():
         elif type == "var":
             argument = arg.text.split("@")
             if argument[0] != "GF":
-                return
+                sys.exit(55)
             else:
                 compare = globalFrame.get(argument[-1])
                 if compare == None:
-                    sys.exit(52)
+                    sys.exit(54)
 
             try:
                 compare = int(compare)
@@ -99,10 +100,10 @@ class Instructions ():
         if what.attrib['type'] == "var":
             splitWhat = what.text.split("@")
             if splitWhat[0] != "GF":
-                return
+                sys.exit(55)
             else:
                 if not isVariableDefined(globalFrame, splitWhat[-1]):
-                    sys.exit(52)
+                    sys.exit(54)
                 else:
                     what = globalFrame[splitWhat[-1]]
         else:
@@ -111,10 +112,10 @@ class Instructions ():
         splitWhere = where.text.split("@")
 
         if splitWhere[0] != "GF":
-            return
+            sys.exit(55)
         else:
             if not isVariableDefined(globalFrame, splitWhere[-1]):
-                sys.exit(52)
+                sys.exit(54)
             else:
                 globalFrame[splitWhere[-1]] = what
 
@@ -133,7 +134,7 @@ class Instructions ():
 
             newIP = labels.get(arg.text)
             if newIP == None:
-                sys.exit(52)
+                sys.exit(54)
 
         return int(newIP)
 
@@ -148,7 +149,7 @@ class Instructions ():
 
                 newIP = labels.get(arg.text)
                 if newIP == None:
-                    sys.exit(52)
+                    sys.exit(54)
 
             elif arg.tag == "arg2":
                 compare1 = Instructions.__parseArg(arg)
@@ -175,7 +176,7 @@ class Instructions ():
 
                 newIP = labels.get(arg.text)
                 if newIP == None:
-                    sys.exit(52)
+                    sys.exit(54)
 
             elif arg.tag == "arg2":
                 compare1 = Instructions.__parseArg(arg)
@@ -203,12 +204,12 @@ class Instructions ():
             elif arg.attrib['type'] == "var":
                 split = arg.text.split("@")
                 if split[0] != "GF":
-                    sys.exit(-1)
+                    sys.exit(55)
 
                 else:
                     returnCode = globalFrame.get(split[-1])
                     if returnCode == None:
-                        sys.exit(52)
+                        sys.exit(54)
                     else:
                         try:
                             returnCode = int(returnCode)
@@ -218,7 +219,7 @@ class Instructions ():
                     if returnCode not in range(-1, 50):
                         sys.exit(57)
             else:
-                sys.exit(32)
+                sys.exit(53)
 
         return returnCode
 
@@ -230,24 +231,24 @@ class Instructions ():
 
                 split = arg.text.split("@")
                 if split[0] != "GF":
-                    print("Not implemented")
-                    sys.exit(-1)
+                    sys.stderr.write("Not implemented")
+                    sys.exit(55)
 
                 dest = split[-1]
                 if globalFrame.get(dest) == None:
-                    sys.exit(52)
+                    sys.exit(54)
 
             elif arg.tag == "arg2":
                 split = arg.text.split("@")
 
                 if arg.attrib['type'] == "var":
                     if split[0] != "GF":
-                        print("Not implemented")
-                        sys.exit(-1)
+                        sys.stderr.write("Not implemented")
+                        sys.exit(55)
 
                     value1 = globalFrame.get(split[-1])
                     if value1 == None:
-                        sys.exit(52)
+                        sys.exit(54)
 
                     try:
                         value1 = int(value1)
@@ -261,19 +262,19 @@ class Instructions ():
                         sys.exit(53)
 
                 else:
-                    sys.exit(32)
+                    sys.exit(53)
 
             elif arg.tag == "arg3":
                 split = arg.text.split("@")
 
                 if arg.attrib['type'] == "var":
                     if split[0] != "GF":
-                        print("Not implemented")
-                        sys.exit(-1)
+                        sys.stderr.write("Not implemented")
+                        sys.exit(55)
 
                     value2 = globalFrame.get(split[-1])
                     if value2 == None:
-                        sys.exit(52)
+                        sys.exit(54)
 
                     try:
                         value2 = int(value1)
@@ -287,7 +288,7 @@ class Instructions ():
                         sys.exit(53)
 
                 else:
-                    sys.exit(23)
+                    sys.exit(53)
 
         globalFrame[dest] = str(value1 + value2)
 
@@ -295,28 +296,28 @@ class Instructions ():
         for arg in instruction:
             if arg.tag == "arg1":
                 if arg.attrib['type'] != "var":
-                    sys.exit(23)
+                    sys.exit(32)
 
                 split = arg.text.split("@")
                 if split[0] != "GF":
-                    print("Not implemented")
-                    sys.exit(-1)
+                    sys.stderr.write("Not implemented")
+                    sys.exit(55)
 
                 dest = split[-1]
                 if globalFrame.get(dest) == None:
-                    sys.exit(52)
+                    sys.exit(54)
 
             elif arg.tag == "arg2":
                 split = arg.text.split("@")
 
                 if arg.attrib['type'] == "var":
                     if split[0] != "GF":
-                        print("Not implemented")
-                        sys.exit(-1)
+                        sys.stderr.write("Not implemented")
+                        sys.exit(55)
 
                     value1 = globalFrame.get(split[-1])
                     if value1 == None:
-                        sys.exit(52)
+                        sys.exit(54)
 
                     try:
                         value1 = int(value1)
@@ -330,19 +331,19 @@ class Instructions ():
                         sys.exit(53)
 
                 else:
-                    sys.exit(23)
+                    sys.exit(53)
 
             elif arg.tag == "arg3":
                 split = arg.text.split("@")
 
                 if arg.attrib['type'] == "var":
                     if split[0] != "GF":
-                        print("Not implemented")
-                        sys.exit(-1)
+                        sys.stderr.write("Not implemented")
+                        sys.exit(55)
 
                     value2 = globalFrame.get(split[-1])
                     if value2 == None:
-                        sys.exit(52)
+                        sys.exit(54)
 
                     try:
                         value2 = int(value1)
@@ -356,7 +357,7 @@ class Instructions ():
                         sys.exit(53)
 
                 else:
-                    sys.exit(23)
+                    sys.exit(53)
 
         globalFrame[dest] = str(value1 - value2)
 
@@ -364,28 +365,28 @@ class Instructions ():
         for arg in instruction:
             if arg.tag == "arg1":
                 if arg.attrib['type'] != "var":
-                    sys.exit(12) #TODO
+                    sys.exit(32)
 
                 split = arg.text.split("@")
                 if split[0] != "GF":
-                    print("Not implemented")
-                    sys.exit(-1)
+                    sys.stderr.write("Not implemented")
+                    sys.exit(55)
 
                 dest = split[-1]
                 if globalFrame.get(dest) == None:
-                    sys.exit(52)
+                    sys.exit(54)
 
             elif arg.tag == "arg2":
                 split = arg.text.split("@")
 
                 if arg.attrib['type'] == "var":
                     if split[0] != "GF":
-                        print("Not implemented")
-                        sys.exit(-1)
+                        sys.stderr.write("Not implemented")
+                        sys.exit(55)
 
                     value1 = globalFrame.get(split[-1])
                     if value1 == None:
-                        sys.exit(52)
+                        sys.exit(54)
 
                     try:
                         value1 = int(value1)
@@ -399,19 +400,19 @@ class Instructions ():
                         sys.exit(53)
 
                 else:
-                    sys.exit(32)
+                    sys.exit(53)
 
             elif arg.tag == "arg3":
                 split = arg.text.split("@")
 
                 if arg.attrib['type'] == "var":
                     if split[0] != "GF":
-                        print("Not implemented")
-                        sys.exit(-1)
+                        sys.stderr.write("Not implemented")
+                        sys.exit(55)
 
                     value2 = globalFrame.get(split[-1])
                     if value2 == None:
-                        sys.exit(52)
+                        sys.exit(54)
 
                     try:
                         value2 = int(value1)
@@ -425,7 +426,7 @@ class Instructions ():
                         sys.exit(53)
 
                 else:
-                    sys.exit(32)
+                    sys.exit(53)
 
         globalFrame[dest] = str(value1 * value2)
 
@@ -433,28 +434,28 @@ class Instructions ():
         for arg in instruction:
             if arg.tag == "arg1":
                 if arg.attrib['type'] != "var":
-                    sys.exit(12) #TODO
+                    sys.exit(32)
 
                 split = arg.text.split("@")
                 if split[0] != "GF":
-                    print("Not implemented")
-                    sys.exit(-1)
+                    sys.stderr.write("Not implemented")
+                    sys.exit(55)
 
                 dest = split[-1]
                 if globalFrame.get(dest) == None:
-                    sys.exit(52)
+                    sys.exit(54)
 
             elif arg.tag == "arg2":
                 split = arg.text.split("@")
 
                 if arg.attrib['type'] == "var":
                     if split[0] != "GF":
-                        print("Not implemented")
-                        sys.exit(-1)
+                        sys.stderr.write("Not implemented")
+                        sys.exit(55)
 
                     value1 = globalFrame.get(split[-1])
                     if value1 == None:
-                        sys.exit(52)
+                        sys.exit(54)
 
                     try:
                         value1 = int(value1)
@@ -468,19 +469,19 @@ class Instructions ():
                         sys.exit(53)
 
                 else:
-                    sys.exit(32)
+                    sys.exit(53)
 
             elif arg.tag == "arg3":
                 split = arg.text.split("@")
 
                 if arg.attrib['type'] == "var":
                     if split[0] != "GF":
-                        print("Not implemented")
-                        sys.exit(-1)
+                        sys.stderr.write("Not implemented")
+                        sys.exit(55)
 
                     value2 = globalFrame.get(split[-1])
                     if value2 == None:
-                        sys.exit(52)
+                        sys.exit(54)
 
                     try:
                         value2 = int(value1)
@@ -494,7 +495,7 @@ class Instructions ():
                         sys.exit(53)
 
                 else:
-                    sys.exit(32) #TODO
+                    sys.exit(53) #TODO
 
         if value2 == 0:
             sys.exit(57)
@@ -503,29 +504,29 @@ class Instructions ():
 
 #\/ ================ METHODS ================ \/#
 def printHelp():
-    print("help\n")
+    print("print('USAGE: ./interpret.py [--help] [--source=<input_xml_file>]')")
     sys.exit(0)
 
 def parseXML(sourceFile):
     try:
         xmlTree = XMLparser.parse(sourceFile)
     except: #TODO
-        sys.exit(99)
+        sys.exit(31)
 
     root = xmlTree.getroot()
 
     if ( root.tag != "program" ):
-        sys.exit(31)
+        sys.exit(32)
 
     try:
         if ( root.attrib['language'] != "IPPcode19" ):
-            sys.exit(31)
+            sys.exit(32)
     except KeyError:
-        sys.exit(31)
+        sys.exit(32)
 
     for instruction in root:
         if ( instruction.tag != "instruction" ):
-            sys.exit(31)
+            sys.exit(32)
 
         parsedInstructions.append(instruction)
 
@@ -614,7 +615,7 @@ def runProgram():
             for arg in instruction: # TODO : vymyslioet co ked bude viac argumentov
                 frame = arg.text.split("@")[0]
                 if frame != "GF":
-                    continue
+                    sys.exit(55)
 
                 if not isVariableDefined(globalFrame, arg.text.split("@")[-1]):
                     defineVariable(globalFrame, arg.text.split("@")[-1]) #TODO co ak definujem uz definovanu premennu?
@@ -672,7 +673,7 @@ def runProgram():
         elif opcode == "LABEL":
             instructionPointer+=1
             continue
-            
+
         else:
             print("Instruction " + opcode + " not implemented!")
 

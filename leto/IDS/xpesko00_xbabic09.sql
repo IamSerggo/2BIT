@@ -32,7 +32,7 @@ CREATE TABLE pivo (
     Farba VARCHAR(255),
     Styl_kvasenia VARCHAR(255),
     Typ VARCHAR(255),
-    Obsah_alkoholu NUMBER(2, 1) CHECK (Obsah_alkoholu BETWEEN 0 AND 50),
+    Obsah_alkoholu NUMBER(2, 1) CHECK (Obsah_alkoholu<=50),
     Obdobie_varenia VARCHAR(255),
 
     varil_sladek NUMBER NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE slad (
 CREATE TABLE chmel (
     ChmelID NUMBER NOT NULL PRIMARY KEY,
     Aroma VARCHAR(255),
-    Horkost_IBU NUMBER(3) CHECK (Horkost_IBU BETWEEN 0 AND 120),
+    Horkost_IBU NUMBER(3),
     Podiel_kyselin NUMBER(3, 2),
     Povod VARCHAR(255),
     Doba_zberu VARCHAR(255)
@@ -65,19 +65,19 @@ CREATE TABLE chmel (
 
 CREATE TABLE kvasnice (
     KvasniceID NUMBER NOT NULL PRIMARY KEY,
-    Skupenstvo VARCHAR(255) CHECK (Skupenstvo IN ('Kvapalne', 'Pevne')),
+    Skupenstvo VARCHAR(255),
     Styl_kvasenia VARCHAR(255)
 );
 
 CREATE TABLE uzivatel (
     UzivatelID NUMBER NOT NULL PRIMARY KEY,
     Meno VARCHAR(255) NOT NULL,
-    Mnozstvo_vypiteho_piva NUMBER CHECK (Mnozstvo_vypiteho_piva >= 0)
+    Mnozstvo_vypiteho_piva NUMBER
 );
 
 CREATE TABLE sladek (
     SladekID NUMBER NOT NULL PRIMARY KEY,
-    Generacia NUMBER CHECK (Generacia > 0),
+    Generacia NUMBER,
     Druh VARCHAR(255),
 
     sladkovsky_diplom NUMBER NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE pivovar (
     Krajina VARCHAR(255),
 
     Znacka VARCHAR(255) NOT NULL,
-    Rok_zalozenia NUMBER CHECK (Rok_zalozenia >= 1000)
+    Rok_zalozenia NUMBER
 );
 
 CREATE TABLE zmluva (
@@ -144,7 +144,7 @@ CREATE TABLE zmluva (
 );
 
 CREATE TABLE podrobnosti_kp (
-    Mnozstvo NUMBER CHECK (Mnozstvo >= 0),
+    Mnozstvo NUMBER,
     Distribucia VARCHAR(255),
 
     kp NUMBER NOT NULL,
@@ -154,7 +154,7 @@ CREATE TABLE podrobnosti_kp (
 );
 
 CREATE TABLE podrobnosti_h (
-    Mnozstvo NUMBER CHECK (Mnozstvo >= 0),
+    Mnozstvo NUMBER,
     Distribucia VARCHAR(255),
 
     Dostupne_pivo NUMBER NOT NULL,
@@ -165,7 +165,7 @@ CREATE TABLE podrobnosti_h (
 
 CREATE TABLE hodnotenie_hospoda (
     Datum DATE,
-    Pocet_hviezdiciek NUMBER(1) CHECK (Pocet_hviezdiciek BETWEEN 0 AND 5),
+    Pocet_hviezdiciek NUMBER(1),
 
     hodnotena_hospoda NUMBER NOT NULL,
     hodnotiaci_uzivatel NUMBER NOT NULL,
@@ -175,7 +175,7 @@ CREATE TABLE hodnotenie_hospoda (
 
 CREATE TABLE hodnotenie_pivo (
     Datum DATE,
-    Pocet_hviezdiciek NUMBER(1) CHECK (Pocet_hviezdiciek BETWEEN 0 AND 5),
+    Pocet_hviezdiciek NUMBER(1),
 
     hodnotene_pivo NUMBER NOT NULL,
     hodnotiaci_uzivatel NUMBER NOT NULL,
@@ -369,18 +369,18 @@ INSERT INTO chmel(ChmelID, Aroma, Horkost_IBU, Podiel_kyselin, Povod, Doba_zberu
     VALUES ('003', 'matova', '42', '0.63', 'francuzsko', 'minuly rok');
 
 INSERT INTO kvasnice(KvasniceID, Skupenstvo, Styl_kvasenia)
-    VALUES ('001', 'Kvapalne', 'nudny');
+    VALUES ('001', 'ako nic', 'nudny');
 INSERT INTO kvasnice(KvasniceID, Skupenstvo, Styl_kvasenia)
-    VALUES ('002', 'Pevne', 'spodny');
+    VALUES ('002', 'plynne', 'spodny');
 INSERT INTO kvasnice(KvasniceID, Skupenstvo, Styl_kvasenia)
-    VALUES ('003', 'Kvapalne', 'svrchny');
+    VALUES ('003', 'kvapalne', 'svrchny');
 
 INSERT INTO kamenna_predajna(KpID, Nazov, Mesto, Ulica, Cislo_ulice, Krajina)
     VALUES ('001', 'U Havrana', 'Brno', 'Vlhka', '45', 'Africka republika');
 INSERT INTO kamenna_predajna(KpID, Nazov, Mesto, Ulica, Cislo_ulice, Krajina)
     VALUES ('002', 'U Maciatok', 'Praha', 'Dlha', '46', 'Juhoafricka republika');
 INSERT INTO kamenna_predajna(KpID, Nazov, Mesto, Ulica, Cislo_ulice, Krajina)
-    VALUES ('003', 'Madagaskar Beer Bar', 'Olomouc', 'Prazska', '88', 'Madagaskar');
+    VALUES ('003', 'Madagaskar Beer Bar', 'Bratislava', 'Prazska', '88', 'Madagaskar');
 
 INSERT INTO certifikat(CertifikatID, Platnost_do, Datum_vlozenia, drzitel)
     VALUES ('001', '16/MAR/2013', '17/JUN/1998', '001');
@@ -422,14 +422,14 @@ INSERT INTO hodnotenie_hospoda(Datum, Pocet_hviezdiciek, hodnotena_hospoda, hodn
 INSERT INTO hodnotenie_hospoda(Datum, Pocet_hviezdiciek, hodnotena_hospoda, hodnotiaci_uzivatel)
     VALUES ('02/FEB/2020', '2', '002', '002');
 INSERT INTO hodnotenie_hospoda(Datum, Pocet_hviezdiciek, hodnotena_hospoda, hodnotiaci_uzivatel)
-    VALUES ('02/FEB/2020', '4', '003', '002');
+    VALUES ('02/FEB/2020', '9', '003', '002');
 
 INSERT INTO hodnotenie_pivo(Datum, Pocet_hviezdiciek, hodnotene_pivo, hodnotiaci_uzivatel)
     VALUES ('02/FEB/2020', '4', '001', '003');
 INSERT INTO hodnotenie_pivo(Datum, Pocet_hviezdiciek, hodnotene_pivo, hodnotiaci_uzivatel)
-    VALUES ('02/FEB/2020', '1', '001', '002');
+    VALUES ('02/FEB/2020', '8', '001', '002');
 INSERT INTO hodnotenie_pivo(Datum, Pocet_hviezdiciek, hodnotene_pivo, hodnotiaci_uzivatel)
-    VALUES ('23/NOV/2003', '5', '002', '003');
+    VALUES ('23/NOV/2003', '7', '002', '003');
 
 INSERT INTO sledovanie_pivovar(uzivatel_id, pivovar_id)
     VALUES ('001', '003');
@@ -500,3 +500,50 @@ INSERT INTO kp_slad(KP_FK, Slad_FK)
     VALUES ('003', '002');
 INSERT INTO kp_slad(KP_FK, Slad_FK)
     VALUES ('001', '003');
+
+--vypise informacie o receptoch, ktore vydal sladek typu 'na volnej nohe'
+SELECT vydal_sladek, opisuje_pivo, generacia
+FROM recept
+INNER JOIN sladek
+ON recept.vydal_sladek = sladek.SladekID
+WHERE Druh='na volnej nohe';
+
+--vypise informacie o pivovaroch, ktore varia pivo 'Radek'
+SELECT pivovar.Nazov, Krajina, Obsah_alkoholu, varil_sladek
+FROM pivovar
+INNER JOIN pivo
+ON pivovar.PivovarID = pivo.varil_pivovar
+WHERE pivo.Nazov='Radek';
+
+--vypise informacie o datume konca zmluvy medzi hospodami sidliacimi v Amsteradme a pivovarmi
+SELECT hospoda.Nazov, pivovar.Nazov, zmluva.Platnost_koniec
+FROM hospoda
+INNER JOIN zmluva
+ON hospoda.HospodaID = zmluva.Hospoda_id
+INNER JOIN pivovar
+ON zmluva.Pivovar_id = pivovar.PivovarID
+WHERE hospoda.mesto = 'Amsterdam';
+
+--vypise vsetky hodnotene piva od najlepsieho po najhorsie ohodnotene
+SELECT pivo.Nazov, hodnotenie_pivo.Pocet_hviezdiciek, hodnotenie_pivo.hodnotiaci_uzivatel
+FROM hodnotenie_pivo
+INNER JOIN pivo
+ON hodnotenie_pivo.hodnotene_pivo = pivo.PivoID
+GROUP BY pivo.Nazov, hodnotenie_pivo.Pocet_hviezdiciek, hodnotenie_pivo.hodnotiaci_uzivatel
+ORDER BY MAX(hodnotenie_pivo.Pocet_hviezdiciek) DESC;
+
+--vypise pocet pivovarov v kazdej krajine
+SELECT COUNT(PivovarID), Krajina
+FROM pivovar
+GROUP BY Krajina;
+
+--vypise pivovary, ktore varia piva s obsahom alkoholu vyssim ako 0.5
+SELECT Nazov
+FROM pivovar
+WHERE EXISTS(SELECT pivo.Nazov FROM pivo WHERE pivo.varil_pivovar = pivovar.PivovarID AND pivo.Obsah_alkoholu > 0.5);
+
+--vypise informacie o kamennych predajniach, ktore sidlia v meste, kde sa nachadza aj pivovar
+SELECT *
+FROM kamenna_predajna
+WHERE Mesto IN (SELECT Mesto FROM pivovar);
+
