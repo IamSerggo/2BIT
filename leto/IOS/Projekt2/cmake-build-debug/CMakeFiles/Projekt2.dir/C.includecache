@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/radovan/Documents/FIT VUT/2BIT/leto/IOS/Projekt2/main.c
+proj2.h
+/home/radovan/Documents/FIT VUT/2BIT/leto/IOS/Projekt2/proj2.h
+
+/home/radovan/Documents/FIT VUT/2BIT/leto/IOS/Projekt2/proj2.h
+stdio.h
+-
+stdlib.h
+-
+stdbool.h
+-
+unistd.h
+-
+sys/wait.h
+-
+sys/types.h
+-
+sys/mman.h
+-
+semaphore.h
+-
+fcntl.h
+-
+sys/shm.h
+-
+signal.h
+-
+limits.h
+-
+string.h
+-
+stdarg.h
+-
+
