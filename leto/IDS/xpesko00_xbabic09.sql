@@ -1,3 +1,4 @@
+--vymazanie tabuliek pred spustanim skriptu
 DROP TABLE pivo CASCADE CONSTRAINT;
 DROP TABLE recept CASCADE CONSTRAINT;
 DROP TABLE slad CASCADE CONSTRAINT;
@@ -26,10 +27,16 @@ DROP TABLE kp_slad CASCADE CONSTRAINT;
 DROP TABLE kp_chmel CASCADE CONSTRAINT;
 DROP TABLE kp_kvasnice CASCADE CONSTRAINT;
 
+DROP SEQUENCE recept_seq;
+
+DROP PROCEDURE uroven_predajni;
+DROP PROCEDURE podvodnici;
+
+--vytvaranie tabuliek podla zadania projektu
 CREATE TABLE pivo (
     PivoID NUMBER NOT NULL PRIMARY KEY,
     Nazov VARCHAR(255) NOT NULL,
-    Farba VARCHAR(255),
+    Farba_EBC NUMBER,
     Styl_kvasenia VARCHAR(255),
     Typ VARCHAR(255),
     Obsah_alkoholu NUMBER(2, 1) CHECK (Obsah_alkoholu<=50),
@@ -100,9 +107,7 @@ CREATE TABLE kamenna_predajna (
 );
 
 CREATE TABLE certifikat (
-    CertifikatID NUMBER NOT NULL PRIMARY KEY
-        REFERENCES kamenna_predajna(KpID)
-        ON DELETE CASCADE,
+    CertifikatID NUMBER NOT NULL PRIMARY KEY,
 
     Platnost_do DATE,
     Datum_vlozenia DATE,
@@ -286,6 +291,7 @@ CREATE TABLE kp_kvasnice (
     CONSTRAINT PK_kp_kvasnice PRIMARY KEY (KP_FK, Kvasnice_FK)
 );
 
+--previazanie tabuliek, spajanie primarnych a cudzich klucov
 ALTER TABLE pivo ADD CONSTRAINT varene_sladkom FOREIGN KEY(varil_sladek) REFERENCES sladek;
 ALTER TABLE pivo ADD CONSTRAINT varene_pivovarom FOREIGN KEY(varil_pivovar) REFERENCES pivovar;
 
@@ -298,7 +304,7 @@ ALTER TABLE sladek ADD CONSTRAINT je_uzivatel FOREIGN KEY(uzivatelske_konto) REF
 ALTER TABLE podrobnosti_kp ADD CONSTRAINT opisuje_kp FOREIGN KEY(kp) REFERENCES kamenna_predajna;
 ALTER TABLE podrobnosti_kp ADD CONSTRAINT opisuje_pivo FOREIGN KEY(o_pive) REFERENCES pivo;
 
-ALTER TABLE certifikat ADD CONSTRAINT certifikuje_predajnu FOREIGN KEY(drzitel) references kamenna_predajna;
+ALTER TABLE certifikat ADD CONSTRAINT certifikuje_predajnu FOREIGN KEY(drzitel) REFERENCES kamenna_predajna;
 
 ALTER TABLE podrobnosti_h ADD CONSTRAINT pivo_v_hospode FOREIGN KEY(Dostupne_pivo) REFERENCES pivo;
 ALTER TABLE podrobnosti_h ADD CONSTRAINT id_hospody FOREIGN KEY(PK_hospody) REFERENCES hospoda;
@@ -312,6 +318,102 @@ ALTER TABLE hodnotenie_hospoda ADD CONSTRAINT id_uzivatela FOREIGN KEY(hodnotiac
 ALTER TABLE zmluva ADD CONSTRAINT s_hospodou FOREIGN KEY(Hospoda_id) REFERENCES hospoda;
 ALTER TABLE zmluva ADD CONSTRAINT s_pivovarom FOREIGN KEY(Pivovar_id) REFERENCES pivovar;
 
+--triggery
+CREATE SEQUENCE recept_seq
+    START WITH 1
+    INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER recept_pk
+    BEFORE INSERT ON recept
+    FOR EACH ROW
+BEGIN
+    :NEW.ReceptID := recept_seq.nextval;
+END;
+/
+
+CREATE OR REPLACE TRIGGER pivo_farba_kvasenie
+    BEFORE INSERT OR UPDATE ON pivo
+    FOR EACH ROW
+BEGIN
+    IF NOT (:NEW.Farba_EBC IN ('4', '6', '8', '12', '16', '20', '26', '33', '39', '47', '57', '69', '79'))
+        THEN RAISE_APPLICATION_ERROR(-20000, 'Nespravne zadana farba v stupnici EBC!');
+    END IF;
+
+    IF NOT (:NEW.Styl_kvasenia IN ('spodni', 'svrchni', 'spontanni'))
+        THEN RAISE_APPLICATION_ERROR(-20001, 'Nespravne zadany styl kvasenia! svrchni|spodni|spontanni');
+    END IF;
+END;
+/
+
+--procedury
+CREATE OR REPLACE PROCEDURE podvodnici AS
+    CURSOR zmluvy IS SELECT * FROM zmluva;
+    pocet_podvodnikov INTEGER;
+    akt_zmluva zmluvy%ROWTYPE;
+
+    BEGIN
+        pocet_podvodnikov := 0;
+        OPEN zmluvy;
+
+        LOOP
+            FETCH zmluvy INTO akt_zmluva;
+            EXIT WHEN zmluvy%NOTFOUND;
+
+            IF NOT (akt_zmluva.Zlava BETWEEN 0 AND 90)
+                THEN DBMS_OUTPUT.put_line('Zmluva ' || akt_zmluva.ZmluvaID || ' je podozriva z podvodu!');
+                pocet_podvodnikov := pocet_podvodnikov + 1;
+            END IF;
+        END LOOP;
+        DBMS_OUTPUT.put_line('Celkovy pocet podozrivych zmluv: ' || pocet_podvodnikov);
+        CLOSE zmluvy;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20100, 'Chyba pocas prevadzania operacie SELECT!');
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20009, 'Neocakavana chyba pocas procedury podvodnici!');
+    END;
+/
+
+CREATE OR REPLACE PROCEDURE uroven_predajni AS
+    CURSOR predajne IS SELECT * FROM kamenna_predajna;
+    CURSOR certifikaty IS SELECT * FROM certifikat;
+    pocet_certifikatov INTEGER;
+
+    akt_predajna predajne%ROWTYPE;
+    akt_certifikat certifikaty%ROWTYPE;
+
+    BEGIN
+        OPEN predajne;
+
+        LOOP
+            OPEN certifikaty;
+            FETCH predajne INTO akt_predajna;
+            EXIT WHEN predajne%NOTFOUND;
+
+            pocet_certifikatov := 0;
+
+            LOOP
+                FETCH certifikaty INTO akt_certifikat;
+                EXIT WHEN certifikaty%NOTFOUND;
+
+                IF (akt_predajna.KpID = akt_certifikat.drzitel)
+                    THEN pocet_certifikatov := pocet_certifikatov + 1;
+                END IF;
+            END LOOP;
+
+            DBMS_OUTPUT.put_line('Kamenna predajna ' || akt_predajna.Nazov || ' je certifikovana ' || pocet_certifikatov || ' krat');
+            CLOSE certifikaty;
+        END LOOP;
+        CLOSE predajne;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20010, 'Neocakavana chyba pocas procedury uroven_predajni!');
+    END;
+/
+
+
+--vkladanie hodnot do tabuliek
 INSERT INTO uzivatel(UzivatelID, Meno, Mnozstvo_vypiteho_piva)
     VALUES ('001', 'Jozko Mrkvicka', '32');
 INSERT INTO uzivatel(UzivatelID, Meno, Mnozstvo_vypiteho_piva)
@@ -340,19 +442,25 @@ INSERT INTO pivovar(PivovarID, Nazov, Mesto, Ulica, Cislo_ulice, Krajina, Znacka
 INSERT INTO pivovar(PivovarID, Nazov, Mesto, Ulica, Cislo_ulice, Krajina, Znacka, Rok_zalozenia)
     VALUES ('003', 'Varime nie len pivo', 'Bratislava', 'Dubravka', '12', 'Slovensko', 'Skoda', '1234');
 
-INSERT INTO pivo(PivoID, Nazov, Farba, Styl_kvasenia, Typ, Obsah_alkoholu, Obdobie_varenia, varil_sladek, varil_pivovar)
-    VALUES ('001', 'Radek', 'Ruzova', 'zly', 'nevhodny', '0.45', 'vcera', '001', '003');
-INSERT INTO pivo(PivoID, Nazov, Farba, Styl_kvasenia, Typ, Obsah_alkoholu, Obdobie_varenia, varil_sladek, varil_pivovar)
-    VALUES ('002', 'Plzen', 'Spiaca zmiyja', 'dobry', 'vhodny', '0.69', 'zajtra', '002', '001');
-INSERT INTO pivo(PivoID, Nazov, Farba, Styl_kvasenia, Obsah_alkoholu, Obdobie_varenia, varil_sladek, varil_pivovar)
-    VALUES ('003', 'StaroCider', 'nespecifkovana', 'stredny', '0.42', 'cez leto', '001', '002');
+INSERT INTO pivo(PivoID, Nazov, Farba_EBC, Styl_kvasenia, Typ, Obsah_alkoholu, Obdobie_varenia, varil_sladek, varil_pivovar)
+    VALUES ('001', 'Radek', '8', 'spodni', 'nevhodny', '0.45', 'vcera', '001', '003');
+INSERT INTO pivo(PivoID, Nazov, Farba_EBC, Styl_kvasenia, Typ, Obsah_alkoholu, Obdobie_varenia, varil_sladek, varil_pivovar)
+    VALUES ('002', 'Plzen', '69', 'svrchni', 'vhodny', '0.69', 'zajtra', '002', '001');
+INSERT INTO pivo(PivoID, Nazov, Farba_EBC, Styl_kvasenia, Obsah_alkoholu, Obdobie_varenia, varil_sladek, varil_pivovar)
+    VALUES ('003', 'StaroCider', '33', 'spontanni', '0.42', 'cez leto', '001', '002');
+--predvedenie triggeru pivo_farba_kvasenie - kontrola spravnosti zadanych udajov
+INSERT INTO pivo(PivoID, Nazov, Farba_EBC, Styl_kvasenia, Typ, Obsah_alkoholu, Obdobie_varenia, varil_sladek, varil_pivovar)
+    VALUES ('004', 'Squarepants', '80', 'zly', 'maly', '0.59', 'zimne', '003', '001');
 
-INSERT INTO recept(ReceptID, Datum_pridania, vydal_sladek, opisuje_pivo)
-    VALUES ('001', '03/JAN/2015', '001', '003');
-INSERT INTO recept(ReceptID, Datum_pridania, vydal_sladek, opisuje_pivo)
-    VALUES ('002', '02/SEP/1954', '003', '001');
-INSERT INTO recept(ReceptID, Datum_pridania, vydal_sladek, opisuje_pivo)
-    VALUES ('003', '15/SEP/2013', '001', '003');
+--predvedenie triggeru recept_pk - automaticke insertovanie primarneho kluca
+INSERT INTO recept(Datum_pridania, vydal_sladek, opisuje_pivo)
+    VALUES ('03/JAN/2015', '001', '003');
+INSERT INTO recept(Datum_pridania, vydal_sladek, opisuje_pivo)
+    VALUES ('02/SEP/1954', '003', '001');
+INSERT INTO recept(Datum_pridania, vydal_sladek, opisuje_pivo)
+    VALUES ('15/SEP/2013', '001', '003');
+
+SELECT * FROM recept;
 
 INSERT INTO slad(SladID, Farba, Povod, Extrakt)
     VALUES ('001', 'cervena', 'slovensky', 'ziadny');
@@ -387,7 +495,9 @@ INSERT INTO certifikat(CertifikatID, Platnost_do, Datum_vlozenia, drzitel)
 INSERT INTO certifikat(CertifikatID, Platnost_do, Datum_vlozenia, drzitel)
     VALUES ('002', '21/JUL/2016', '07/AUG/1998', '002');
 INSERT INTO certifikat(CertifikatID, Platnost_do, Datum_vlozenia, drzitel)
-    VALUES ('003', '01/JUL/2003', '23/AUG/1995', '003');
+    VALUES ('003', '01/JUL/2003', '23/AUG/1995', '001');
+INSERT INTO certifikat(CertifikatID, Platnost_do, Datum_vlozenia, drzitel)
+    VALUES ('004', '08/AUG/2012', '15/MAR/1984', '003');
 
 INSERT INTO hospoda(HospodaID, Nazov, Mesto, Ulica, Cislo_ulice, Krajina)
     VALUES ('001', 'U tvojej mamky', 'Brno', 'Babicova', '420', 'CR');
@@ -547,3 +657,84 @@ SELECT *
 FROM kamenna_predajna
 WHERE Mesto IN (SELECT Mesto FROM pivovar);
 
+--SET SERVEROUTPUT ON;
+--BEGIN
+  --  podvodnici();
+    --uroven_predajni();
+--END;
+
+--vytvorenie indexu a EXPLAIN PLAN
+DROP INDEX index_zmluva_pivovar;
+
+EXPLAIN PLAN FOR
+    SELECT pivo.Nazov, hodnotenie_pivo.Pocet_hviezdiciek, hodnotenie_pivo.hodnotiaci_uzivatel
+    FROM hodnotenie_pivo
+    INNER JOIN pivo
+    ON hodnotenie_pivo.hodnotene_pivo = pivo.PivoID
+    GROUP BY pivo.Nazov, hodnotenie_pivo.Pocet_hviezdiciek, hodnotenie_pivo.hodnotiaci_uzivatel
+    ORDER BY MAX(hodnotenie_pivo.Pocet_hviezdiciek) DESC;
+SELECT plan_table_output FROM TABLE (dbms_xplan.display());
+
+CREATE INDEX index_zmluva_pivovar ON hodnotenie_pivo(hodnotene_pivo);
+
+EXPLAIN PLAN FOR
+    SELECT pivo.Nazov, hodnotenie_pivo.Pocet_hviezdiciek, hodnotenie_pivo.hodnotiaci_uzivatel
+    FROM hodnotenie_pivo
+    INNER JOIN pivo
+    ON hodnotenie_pivo.hodnotene_pivo = pivo.PivoID
+    GROUP BY pivo.Nazov, hodnotenie_pivo.Pocet_hviezdiciek, hodnotenie_pivo.hodnotiaci_uzivatel
+    ORDER BY MAX(hodnotenie_pivo.Pocet_hviezdiciek) DESC;
+SELECT plan_table_output FROM TABLE (dbms_xplan.display());
+
+--definicia pristupovych prav pre druheho clena teamu
+GRANT ALL ON diplom TO xbabic09;
+GRANT ALL ON kamenna_predajna TO xbabic09;
+GRANT SELECT, UPDATE ON certifikat TO xbabic09;
+GRANT ALL ON hospoda TO xbabic09;
+GRANT ALL ON pivovar TO xbabic09;
+GRANT SELECT, UPDATE ON zmluva TO xbabic09;
+GRANT ALL ON podrobnosti_kp TO xbabic09;
+GRANT ALL ON podrobnosti_h TO xbabic09;
+GRANT SELECT, UPDATE ON hodnotenie_hospoda TO xbabic09;
+GRANT SELECT, UPDATE ON hodnotenie_pivo TO xbabic09;
+GRANT INSERT, UPDATE ON sledovanie_pivovar TO xbabic09;
+GRANT UPDATE ON vyhladavanie_hospoda TO xbabic09;
+GRANT UPDATE ON vyhladavanie_pivo TO xbabic09;
+GRANT UPDATE ON vyhladavanie_pivovar TO xbabic09;
+GRANT ALL ON pivo_slad TO xbabic09;
+GRANT ALL ON pivo_chmel TO xbabic09;
+GRANT ALL ON pivo_kvasnice TO xbabic09;
+GRANT INSERT ON kp_slad TO xbabic09;
+GRANT INSERT ON kp_chmel TO xbabic09;
+GRANT INSERT ON kp_kvasnice TO xbabic09;
+GRANT ALL ON pivo TO xbabic09;
+GRANT INSERT, UPDATE ON slad TO xbabic09;
+GRANT INSERT, UPDATE ON chmel TO xbabic09;
+GRANT INSERT, UPDATE ON kvasnice TO xbabic09;
+GRANT INSERT, SELECT ON recept TO xbabic09;
+GRANT UPDATE ON uzivatel TO xbabic09;
+GRANT ALL ON sladek TO xbabic09;
+
+GRANT EXECUTE ON podvodnici TO xbabic09;
+GRANT EXECUTE ON uroven_predajni TO xbabic09;
+
+--materialized view clena xbabic09
+DROP MATERIALIZED VIEW hodnotene_piva;
+
+CREATE MATERIALIZED VIEW hodnotene_piva
+BUILD IMMEDIATE
+REFRESH ON COMMIT AS
+    SELECT XPESKO00.sladek.SladekID AS ID_SLADEK, XPESKO00.pivo.Nazov AS NAZOV_PIVO
+    FROM XPESKO00.sladek JOIN XPESKO00.pivo ON XPESKO00.sladek.SladekID = XPESKO00.pivo.varil_sladek
+ORDER BY XPESKO00.pivo.nazov;
+
+SELECT * FROM hodnotene_piva;
+
+INSERT INTO XPESKO00.pivo(PivoID, Nazov, Farba_EBC, Styl_kvasenia, Typ, Obsah_alkoholu, Obdobie_varenia, varil_sladek, varil_pivovar)
+VALUES ('004', 'SpongeBob Squarepants', '33', 'spontanni', 'lezak', '0.6', 'vcera', '002', '003');
+
+SELECT * FROM hodnotene_piva;
+
+COMMIT;
+
+SELECT * FROM hodnotene_piva;

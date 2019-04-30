@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/radovan/Documents/FIT VUT/2BIT/leto/IPK/Project2/main.cpp
+iostream
+-
+cstring
+-
+netdb.h
+-
+

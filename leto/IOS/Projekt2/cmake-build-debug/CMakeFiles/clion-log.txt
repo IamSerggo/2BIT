@@ -1,4 +1,0 @@
-/home/radovan/Downloads/clion-2018.3.4/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" "/home/radovan/Documents/FIT VUT/2BIT/leto/IOS/Projekt2"
--- Configuring done
--- Generating done
--- Build files have been written to: /home/radovan/Documents/FIT VUT/2BIT/leto/IOS/Projekt2/cmake-build-debug

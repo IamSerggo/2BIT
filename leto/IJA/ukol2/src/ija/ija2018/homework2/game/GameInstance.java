@@ -26,12 +26,9 @@ public class GameInstance implements Game {
 
             if ( !field.isEmpty() ) thisMove[2] = field.get();
 
-            this.moves.push(thisMove);
+            if ( !figure.move(field) ) return false;
 
-            if ( !figure.move(field) ) {
-                this.moves.pop();
-                return false;
-            }
+            this.moves.push(thisMove);
 
         } catch (Exception NullPointerException) {
             return false;

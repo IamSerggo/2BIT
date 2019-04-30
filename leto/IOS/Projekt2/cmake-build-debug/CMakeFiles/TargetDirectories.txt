@@ -1,3 +1,0 @@
-/home/radovan/Documents/FIT VUT/2BIT/leto/IOS/Projekt2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/radovan/Documents/FIT VUT/2BIT/leto/IOS/Projekt2/cmake-build-debug/CMakeFiles/Projekt2.dir
-/home/radovan/Documents/FIT VUT/2BIT/leto/IOS/Projekt2/cmake-build-debug/CMakeFiles/edit_cache.dir
