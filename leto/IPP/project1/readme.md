@@ -1,6 +1,6 @@
 HODNOTENIE : 
 #### parse.php : 8/7
-#### interpret.py : /13
+#### interpret.py : 4/13 (robil som len minimalne riesenie kvoli zapoctu)
 
 --------------------------------------------------------
 

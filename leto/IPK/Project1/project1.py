@@ -58,7 +58,7 @@ def parseData(city, APIkey):
             print("City not found!\n")
             sys.exit(1)
         else:
-            print("Unknown error occured!\n")
+            print("Unknown error occurred!\n")
             sys.exit(1)
 
     parsedResponse = json.loads(decodedResponse.split("\r\n\r\n")[-1])

@@ -1,5 +1,0 @@
-.IPPcode19
-DEFVAR GF@hovnocuc
-IDIV GF@hovnocuc int@3 int@0
-WRITE GF@hovnocuc
-
