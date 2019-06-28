@@ -130,7 +130,7 @@ def main():
     if ( len(sys.argv) != 3 ):
         print("Wrong number of arguments!\n")
         sys.exit(1)
-    elif ( not sys.argv[1].startswith("api_key=") or sys.argv[1] == "api-key=" ):
+    elif ( not sys.argv[1].startswith("api_key=") or sys.argv[1] == "api_key=" ):
         print("Wrong API key argument format!\n api-key=<yourapikey>\n")
         sys.exit(1)
     elif ( not sys.argv[2].startswith("city=") or sys.argv[2] == "city=" ):
@@ -139,7 +139,7 @@ def main():
     else:
         APIkey = str(sys.argv[1])
         city = str(sys.argv[2])
-        printData(city.replace("city=", ""), APIkey.replace("api-key=", ""))
+        printData(city.replace("city=", ""), APIkey.replace("api_key=", ""))
 
 if __name__ == "__main__":
     main()
